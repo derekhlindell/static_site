@@ -23,5 +23,27 @@ class HTMLNode:
 
         return prop_items
 
+class LeafNode(HTMLNode):
+    def __init__(self, value, tag=None, props=None):
+        super().__init__(tag, None, None, props)
+        self.value = value
 
-test_node = HTMLNode(props={"href": "https://www.google.com", "target": "_blank", "blah": "blah blah"})
+    def __repr__(self):
+        return f"LeafNode(value={self.value}, tag={self.tag}, props={self.props})"
+
+    def leaf_to_html(self):
+        if self.value is None:
+            raise ValueError
+        
+        if self.tag is None:
+            return str(self.value)
+
+        if self.props is None:
+            return f"<{self.tag}>{self.value}</{self.tag}>"
+        
+        leaf_props = self.props_to_html().rstrip()
+        return f"<{self.tag} {leaf_props}>{self.value}</{self.tag}>"
+
+
+test_leafnode = LeafNode("testing")
+print(test_leafnode)
