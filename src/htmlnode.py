@@ -14,18 +14,14 @@ class HTMLNode:
 
     def props_to_html(self):
         if self.props is None:
-            raise NotImplementedError
+            return ''
         
         prop_items = ""
         for k, v in self.props.items():
-            item = f'{k}="{v}"'
-            prop_items += item + " "
+            item = f'{k}="{v}" '
+            prop_items += item
 
         return prop_items
 
 
-node1 = HTMLNode()
-node2 = HTMLNode()
-
-test_node = HTMLNode("h1", "h1 title", [node1, node2],{"href": "https://www.google.com", "target": "_blank", "blah": "blah blah"})
-print(repr(test_node))
+test_node = HTMLNode(props={"href": "https://www.google.com", "target": "_blank", "blah": "blah blah"})
