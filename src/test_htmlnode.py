@@ -1,13 +1,13 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
     def test_props_to_html(self):
         node = HTMLNode(props={"href": "https://www.google.com", "target": "_blank", "blah": "blah blah"})
         result = node.props_to_html()
-        expected = 'href="https://www.google.com" target="_blank" blah="blah blah" '
+        expected = ' href="https://www.google.com" target="_blank" blah="blah blah"'
         self.assertEqual(result, expected)
 
     def test_props_to_html_empty(self):
@@ -27,22 +27,46 @@ class TestHTMLNode(unittest.TestCase):
 
 class TestLeafNode(unittest.TestCase):
     def test_to_html_empty(self):
-        node = LeafNode(None)
+        node = LeafNode(None, None)
         with self.assertRaises(ValueError):
-            node.leaf_to_html()
+            node.to_html()
         
     def test_to_html_p(self):
-        node = LeafNode("This is a paragraph of text.", tag="p")
-        result = node.leaf_to_html()
+        node = LeafNode("p", "This is a paragraph of text.")
+        result = node.to_html()
         expected = "<p>This is a paragraph of text.</p>"
         self.assertEqual(result, expected)
 
     def test_to_html_a(self):
-        node = LeafNode("Click me!", tag="a", props={"href": "https://www.google.com"})
-        result = node.leaf_to_html()
+        node = LeafNode("a", "Click me!", props={"href": "https://www.google.com"})
+        result = node.to_html()
         expected = '<a href="https://www.google.com">Click me!</a>'
         self.assertEqual(result, expected)
-        
 
+class TestParentNode(unittest.TestCase):
+    def test_to_html_no_tag(self):
+        node = ParentNode(None, [])
+        with self.assertRaises(ValueError):
+            node.to_html()
+    
+    def test_to_html_no_children(self):
+        node = ParentNode("p", None)
+        with self.assertRaises(ValueError):
+            node.to_html()
+
+    def test_to_html(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+        )
+        result = node.to_html()
+        expected = "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>"
+        self.assertEqual(result, expected)
+        
 if __name__ == "__main__":
     unittest.main()
