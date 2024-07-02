@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, text_type_text
+from src.textnode import TextNode
 
 
 class TestTextNode(unittest.TestCase):
@@ -26,11 +26,11 @@ class TestTextNode(unittest.TestCase):
 
     def test_different_style(self):
         node = TextNode("This is a text node", "bold",)
-        node2 = TextNode("This is a text node", "italics",)
+        node2 = TextNode("This is a text node", "italic")
         self.assertNotEqual(node, node2)
 
     def test_repr(self):
-        node = TextNode("This is a text node", text_type_text, "https://www.boot.dev")
+        node = TextNode("This is a text node", "text", "https://www.boot.dev")
         self.assertEqual(
             "TextNode(This is a text node, text, https://www.boot.dev)", repr(node)
         )

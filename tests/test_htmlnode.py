@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode, ParentNode
+from src.htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -67,6 +67,28 @@ class TestParentNode(unittest.TestCase):
         result = node.to_html()
         expected = "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>"
         self.assertEqual(result, expected)
-        
+    
+    def test_to_html_many_children(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+        )
+        result = node.to_html()
+        expected = "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>"
+        self.assertEqual(result, expected)
+
+    def test_to_html_with_grandchildren(self):
+        grandchild_node = LeafNode("b", "grandchild")
+        child_node = ParentNode("span", [grandchild_node])
+        parent_node = ParentNode("div", [child_node])
+        result = parent_node.to_html()
+        expected = "<div><span><b>grandchild</b></span></div>"
+        self.assertEqual(result, expected)
+
 if __name__ == "__main__":
     unittest.main()

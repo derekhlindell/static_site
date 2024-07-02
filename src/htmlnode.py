@@ -3,6 +3,7 @@
 # children = list
 # props = dict
 
+from textnode import TextNode, text_type
 
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
@@ -47,56 +48,46 @@ class LeafNode(HTMLNode):
 
 
 class ParentNode(HTMLNode):
-    def __init__(self, tag:str, children:list, props=None):
+    def __init__(self, tag, children, props=None):
         super().__init__(tag, None, children, props)
 
-    def to_html(self, current_nodes=[]):
+    def to_html(self):
         if self.tag is None:
             raise ValueError("Invalid HTML: no tag")
         
         if self.children is None:
             raise ValueError("Invalid HTML: no children")
         
-        '''
-        Otherwise, it should return a string representing the HTML tag of the node and its children. 
-        This should be a recursive method (albeit with each recursion using a new node instance). 
-        I iterated over all the children and called to_html on each, concatenating the results 
-        and injecting them between the opening and closing tags of the parent.
-        '''
-        nodes = []
-
+        html = []
+        
         for node in self.children:
             if isinstance(node, LeafNode):
-                new_node = LeafNode(node.tag, node.value, node.props)
-                nodes.append(new_node.to_html())
+                html.append(node.to_html())
             else:
-                new_node = ParentNode(node.tag, node.children)
-                nodes.extend(self.to_html(current_nodes))
-        
-        return nodes
+                html.append(node.to_html())
+
+        return f"<{self.tag}>" + "".join(html) + f"</{self.tag}>"
 
     def __repr__(self):
-        return f"ParentNode(tag={self.tag}, children={self.children}, props={self.props})"
+        return f"ParentNode(tag={self.tag}, children={self.children} {self.props})"
 
-node = ParentNode(
-    "p",
-    [
-        LeafNode("b", "LeafNode 1"),
-        ParentNode(
-            "p",
-            [
-                LeafNode("b", "LeafNode 2a"),
-                LeafNode(None, "LeafNode 2b"),
-                ParentNode(
-                    "p",
-                    [
-                        LeafNode("b", "LeafNode 3a"),
-                        LeafNode(None, "LeafNode 3b"),
-                    ],
-                )
-            ],
-        )
-    ],
-)
+def text_node_to_html_node(text_node):
+    match text_node:
+        case "text":
+            return LeafNode(None, text_node.text_type)
+        case "bold":
+            return "bold"
+        case text_type.italic:
+            return "italic"
+        case text_type.code:
+            return "code"
+        case text_type.link:
+            return "link"
+        case text_type.image:
+            return "image"
 
-print(node.to_html())
+        case _:
+            raise Exception(f"Invalid type: '{text_node}' is not a valid text_type")
+
+TextNode("cool text", text_type.text)
+text_node_to_html_node("text_type_text")
