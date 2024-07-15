@@ -1,2 +1,3 @@
 # static_site
-static site project for boot.dev
+Markdown static site project for boot.dev
+
